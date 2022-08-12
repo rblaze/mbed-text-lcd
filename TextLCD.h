@@ -16,11 +16,11 @@ class TextLCD : public Phys {
 
   void moveCursorHome() { Phys::writeCommand(CMD_HOME); }
 
-  void moveCursorTo(int column, int row) {
+  void moveCursorTo(int column, int line) {
     MBED_ASSERT(column >= 0 && column < Phys::kNumColumns);
-    MBED_ASSERT(row >= 0 && row < Phys::kNumRows);
+    MBED_ASSERT(line >= 0 && line < Phys::kNumLines);
 
-    int addr = Phys::kLineOffsets[row] + column;
+    int addr = Phys::kLineOffsets[line] + column;
     int cmd = CMD_DDRAM_ADDR | (addr & 0x7f);
     Phys::writeCommand(cmd);
   }
