@@ -12,6 +12,8 @@ class TextLCD : public Phys {
   constexpr int width() const { return Phys::kNumColumns; }
   constexpr int height() const { return Phys::kNumLines; }
 
+  void init() { Phys::initialize(); }
+
   void clearScreen() { Phys::writeCommand(CMD_CLS); }
 
   void moveCursorHome() { Phys::writeCommand(CMD_HOME); }

@@ -10,8 +10,7 @@ constexpr char kDataStreamWrite = 0x40;
 
 }  // namespace
 
-ST7036i_20x2::ST7036i_20x2(I2C& bus, int address)
-    : bus_{bus}, address_{address} {
+void ST7036i_20x2::initialize() {
   // Initialization sequence from datasheet.
   bus_.write(address_, &kCommandStreamWrite, sizeof(kCommandStreamWrite), true);
   // Function set: 8 bit, 2 lines, single height, IS 0b00
