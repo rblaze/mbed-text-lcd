@@ -12,7 +12,9 @@ constexpr char kDataStreamWrite = 0x40;
 
 void ST7036i_20x2::initialize() {
   // Initialization sequence from datasheet.
-  bus_.write(address_, &kCommandStreamWrite, sizeof(kCommandStreamWrite), true);
+  bus_.start();
+  bus_.write(address_);
+  bus_.write(kCommandStreamWrite);
   // Function set: 8 bit, 2 lines, single height, IS 0b00
   bus_.write(0x38);
   ThisThread::sleep_for(10ms);
@@ -35,8 +37,9 @@ void ST7036i_20x2::initialize() {
 
 void ST7036i_20x2::writeCommand(uint8_t value) {
   char buf[2] = {kCommandByteWrite, value};
-  int result = bus_.write(address_, buf, sizeof(buf), false);
+  int result = bus_.write(address_, buf, sizeof(buf));
   if (result != 0) {
+    printf("lcd cmd failed\n");
     MBED_WARNING1(
         MBED_MAKE_ERROR(MBED_MODULE_UNKNOWN, MBED_ERROR_FAILED_OPERATION),
         "Command write failed", result);
@@ -44,16 +47,12 @@ void ST7036i_20x2::writeCommand(uint8_t value) {
 }
 
 void ST7036i_20x2::writeData(Span<const uint8_t> data) {
-  int result =
-      bus_.write(address_, &kDataStreamWrite, sizeof(kDataStreamWrite), true);
-  if (result != 0) {
-    MBED_WARNING1(
-        MBED_MAKE_ERROR(MBED_MODULE_UNKNOWN, MBED_ERROR_FAILED_OPERATION),
-        "Control byte write failed", result);
-  }
+  bus_.start();
+  bus_.write(address_);
+  bus_.write(kDataStreamWrite);
 
   for (auto b : data) {
-    result = bus_.write(b);
+    int result = bus_.write(b);
     if (result != 1) {
       MBED_WARNING1(
           MBED_MAKE_ERROR(MBED_MODULE_UNKNOWN, MBED_ERROR_FAILED_OPERATION),
